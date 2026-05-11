@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="SecureVault - Military-Grade AES-256 Encrypted Password Manager">
+    <title>SecureVault - Military-Grade Password Manager</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-wfhR4J/NXf/fNrjqq+aUIIfzA30W+dsPQc1OnLY08SNrsXiFf+eb2RxG6nKhEoND57QuhMp5mvj/m0FlUVVc1A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-vault"></i> SecureVault</h1>
+                <p>AES-256 Encrypted v1.0.2</p>
+            </div>
+
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-info">
+                    <h3 id="userName">Loading...</h3>
+                    <p id="userEmail">user@example.com</p>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-section-title">Vault</div>
+                    <div class="menu-item active" data-view="all-items">
+                        <i class="fas fa-key"></i> All Items
+                    </div>
+                    <div class="menu-item" data-view="favorites">
+                        <i class="fas fa-star"></i> Favorites
+                    </div>
+                    <div class="menu-item" data-view="recent">
+                        <i class="fas fa-clock"></i> Recently Used
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title">Categories</div>
+                    <div class="menu-item" data-category="login">
+                        <i class="fas fa-sign-in-alt"></i> Logins
+                    </div>
+                    <div class="menu-item" data-category="email">
+                        <i class="fas fa-envelope"></i> Emails
+                    </div>
+                    <div class="menu-item" data-category="payment">
+                        <i class="fas fa-credit-card"></i> Payments
+                    </div>
+                    <div class="menu-item" data-category="note">
+                        <i class="fas fa-sticky-note"></i> Notes
+                    </div>
+                    <div class="menu-item" data-category="document">
+                        <i class="fas fa-file"></i> Documents
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title">Settings</div>
+                    <div class="menu-item" data-action="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </div>
+                    <div class="menu-item" data-action="security">
+                        <i class="fas fa-shield-alt"></i> Security
+                    </div>
+                    <div class="menu-item" data-action="export">
+                        <i class="fas fa-download"></i> Export
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="sidebar-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search items...">
+                </div>
+                <div class="top-bar-right">
+                    <button class="icon-btn" id="addItemBtn" title="Add new item">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="icon-btn" id="refreshBtn" title="Refresh vault">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="icon-btn" id="settingsBtn" title="Settings">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <!-- ITEMS LIST -->
+                <div class="items-list">
+                    <div class="list-header">
+                        <h3>Items</h3>
+                        <div class="list-actions">
+                            <button class="action-btn" id="sortBtn" title="Sort">
+                                <i class="fas fa-sort"></i>
+                            </button>
+                            <button class="action-btn" id="filterBtn" title="Filter">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="items-container" id="itemsContainer">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No items yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAIL PANEL -->
+                <div class="detail-panel">
+                    <div id="emptyDetail" class="empty-state" style="display: flex;">
+                        <i class="fas fa-lock"></i>
+                        <h2>Select an item to view details</h2>
+                        <p>Choose from your vault or create a new entry</p>
+                    </div>
+                    <div id="detailContent" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-lock"></i> SecureVault Login</h2>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="masterPassword">Master Password</label>
+                    <input type="password" id="masterPassword" placeholder="Enter your master password" required>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="passwordStrength"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="rememberMe"> Remember for this session
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="itemModalTitle"><i class="fas fa-plus"></i> Add New Item</h2>
+                <button class="close-btn" type="button" data-modal="itemModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="itemForm">
+                <div class="tabs">
+                    <button class="tab active" type="button" data-tab="basic">Basic Info</button>
+                    <button class="tab" type="button" data-tab="details">Details</button>
+                    <button class="tab" type="button" data-tab="notes">Notes</button>
+                </div>
+
+                <div class="tab-content active" data-tab="basic">
+                    <div class="form-group">
+                        <label for="itemTitle">Title</label>
+                        <input type="text" id="itemTitle" placeholder="e.g., Gmail Account" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemCategory">Category</label>
+                        <select id="itemCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="login">Login</option>
+                            <option value="email">Email</option>
+                            <option value="payment">Payment</option>
+                            <option value="note">Note</option>
+                            <option value="document">Document</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="details">
+                    <div class="form-group">
+                        <label for="itemUsername">Username / Email</label>
+                        <input type="text" id="itemUsername" placeholder="username or email">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemPassword">Password</label>
+                        <div class="field-value">
+                            <input type="password" id="itemPassword" placeholder="password" class="field-input">
+                            <button class="field-action-btn" type="button" id="togglePassword" title="Show/Hide">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="field-action-btn" type="button" id="generatePassword" title="Generate">
+                                <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemUrl">Website / URL</label>
+                        <input type="url" id="itemUrl" placeholder="https://example.com">
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="notes">
+                    <div class="form-group">
+                        <label for="itemNotes">Notes</label>
+                        <textarea id="itemNotes" placeholder="Add any additional notes..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-modal="itemModal">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <button class="close-btn" type="button" data-modal="settingsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tabs">
+                <button class="tab active" type="button" data-tab="general">General</button>
+                <button class="tab" type="button" data-tab="security">Security</button>
+                <button class="tab" type="button" data-tab="backup">Backup</button>
+            </div>
+
+            <div class="tab-content active" data-tab="general">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="autoLock" checked> Auto-lock after 15 minutes
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="showPasswords"> Show passwords by default
+                    </label>
+                </div>
+            </div>
+
+            <div class="tab-content" data-tab="security">
+                <div class="security-indicator">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>AES-256 Encryption Active</span>
+                </div>
+                <button class="btn btn-primary" id="changeMasterPassword">
+                    <i class="fas fa-key"></i> Change Master Password
+                </button>
+            </div>
+
+            <div class="tab-content" data-tab="backup">
+                <button class="btn btn-primary" id="exportVaultBtn">
+                    <i class="fas fa-download"></i> Export Vault (Encrypted)
+                </button>
+                <button class="btn btn-secondary" id="importVaultBtn">
+                    <i class="fas fa-upload"></i> Import Vault
+                </button>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-modal="settingsModal">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" integrity="sha512-wfhR4J/NXf/fNrjqq+aUIIfzA30W+dsPQc1OnLY08SNrsXiFf+eb2RxG6nKhEoND57QuhMp5mvj/m0FlUVVc1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/crypto-handler.js"></script>
+    <script src="js/vault-manager.js"></script>
+    <script src="js/ui-handler.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
